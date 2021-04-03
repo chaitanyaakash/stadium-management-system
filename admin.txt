@@ -1,0 +1,97 @@
+//Admin Login//
+$mode = $_REQUEST["mode"];
+if ($mode == "login") {
+    $username = trim($_POST['username']);
+    $pass = trim($_POST['user_password']);
+    if ($username == "" || $pass == "") {
+        $_SESSION["errorType"] = "danger";
+        $_SESSION["errorMsg"] = "Enter manadatory fields";
+    } else {
+        $sql = "SELECT * FROM system_users WHERE u_username = :uname AND u_password = :upass ";
+        try {
+            $stmt = $DB->prepare($sql);
+            // bind the values
+            $stmt->bindValue(":uname", $username);
+            $stmt->bindValue(":upass", $pass);
+            // execute Query
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            if (count($results) > 0) {
+                $_SESSION["errorType"] = "success";
+                $_SESSION["errorMsg"] = "You have successfully logged in.";
+                $_SESSION["user_id"] = $results[0]["u_userid"];
+                $_SESSION["rolecode"] = $results[0]["u_rolecode"];
+                $_SESSION["username"] = $results[0]["u_username"];
+                redirect("dashboard.php");
+                exit;
+            } else {
+                $_SESSION["errorType"] = "info";
+                $_SESSION["errorMsg"] = "username or password does not exist.";
+            }
+        } catch (Exception $ex) {
+            $_SESSION["errorType"] = "danger";
+            $_SESSION["errorMsg"] = $ex->getMessage();
+        }
+    }
+   // redirect function is found in functions.php page
+    redirect("index.php"); 
+}
+//Admin should be able to adding the details//
+<?php 
+	session_start();
+	$db = mysqli_connect('localhost', 'root', '', 'crud');
+
+	// initialize variables
+	$numberofseats = "";
+	$seatavailbility= "";
+        $seatprice="";
+        $categoryofseat="";
+	$id = 0;
+	$update = false;
+
+	if (isset($_POST['save'])) {
+		$numberofseats = $_POST['numberofseats '];
+		$seatavailbility=$_POST['$seatavailbility'];
+                $seatprice=$_POST['$seatprice'];
+                $categoryofseat=$_POST['$categoryofseat'];
+
+
+		mysqli_query($db, "INSERT INTO info (numberofseats,seatavalibility,seatprice,categoryofseat) VALUES ('$numberofseats', '$seatavalibility','$seatprice','$categoryofseat')"); 
+		$_SESSION['message'] = "details successfully saved"; 
+		header('location: index.php');
+	}
+//admin able to updating the details//
+<?php 
+ 
+include_once 'db.php';
+ 
+$sql = "UPDATE users SET seatavalibility WHERE id=1 ";
+ 
+$query = mysqli_query($conn,$sql);
+if(!$query)
+{
+    echo "Query does not work.".mysqli_error($conn);die;
+}
+else
+{
+    echo "Data successfully updated";
+}
+ 
+   
+?>
+//admin able to deleting the details//
+<?php
+    include_once 'db.php';
+ 
+    $sql = "DELETE FROM users WHERE userid='" . $_GET["userid"] . "'";
+ 
+    if (mysqli_query($conn, $sql)) {
+ 
+        echo "Record deleted successfully";
+ 
+    } else {
+     
+        echo "Error deleting record: " . mysqli_error($conn);
+    }
+    mysqli_close($conn);
+?>

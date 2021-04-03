@@ -1,0 +1,79 @@
+
+
+<?php 
+@session_start();
+$username = "root";
+$password = "";
+$server="localhost";
+$database = "Mydatabase";
+$table = "booking";
+
+
+@mysql_connect($server,$username,$password);
+mysql_select_db($database);
+
+if(isset($_POST['ok']))
+{
+  //values from my html page
+$date = $_POST['ddate'];
+$userid = $_SESSION['login'];
+$num =$_POST['num'];
+$confirmation = uniqid();
+'$price'=price(); 
+
+//booking details that will be stored in booking table
+$sql = "INSERT INTO $table VALUES('$confirmation', '$date', '$num', '$userid', '$price')";
+$query=mysql_query($sql);
+
+//date,rout and number of seats will be inserted to date table
+$sql = "INSERT INTO date (sno,date) VALUES( '$num','$date' )";
+$query=mysql_query($sql);
+
+
+//calculating number of seats 
+$sqld="SELECT COUNT(sno) FROM date WHERE date='$date' AND tcode='$tcode'";
+$queryd=mysql_query($sqld);
+if ($queryd>44)
+	echo "No Available Seats left";
+else
+	echo "seats Available= ".$queryd;
+
+
+//decarsing number of seats in routs table
+$sql3 = "UPDATE seatavaliblity SET seat=seat-'$num' WHERE Tcode='$tcode'"&$sql = "SELECT * FROM seatavalibility LIMIT 50%";
+;
+$query3=mysql_query($sql3);
+
+
+//confirmation message
+echo "<h3><font color='red'>Booking is successfully Confirmed  id :".$userid."</font></h3>";
+echo "<h4><font color='blue'>The total cost=  ".$price." OMR </br>And your confirmation code is: ". $confirmation."</font></h4>";
+	 } 
+?>
+
+//After booking each user have unique seat number//
+<?php
+@session_start();
+$username = "root";
+$rownumber="",
+$server="localhost";
+$database = "Mydatabase";
+$table = "booking";
+@mysql_connect($server,$username,$password);
+mysql_select_db($database);
+SELECT distinct RowNumber
+FROM booking
+WHERE username='$username'
+?>
+
+
+
+
+
+
+
+
+
+
+
+
